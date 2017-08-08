@@ -20,9 +20,6 @@ class Timer:
   def elapsed( self ):
     return self.end - self.begin
 
-# Some globals
-one_fifth = 1.0 / 5.0
-
 def main():
   argparser = argparse.ArgumentParser()
   argparser.add_argument( "-N", "--grid_size", type=int, default=100 )
@@ -53,7 +50,7 @@ def main():
 
     write[1:args.grid_size+1,1:args.grid_size+1] = ( read[1:args.grid_size+1,0:args.grid_size  ] + \
          read[0:args.grid_size,1:args.grid_size+1] + read[1:args.grid_size+1,1:args.grid_size+1] + read[2:args.grid_size+2,1:args.grid_size+1] + \
-                                                     read[1:args.grid_size+1,2:args.grid_size+2] ) * one_fifth
+                                                     read[1:args.grid_size+1,2:args.grid_size+2] ) * 0.2
 
     # flip the read and write array
     write, read = read, write
@@ -64,8 +61,7 @@ def main():
 
   if args.display:
     plt.matshow( read )
-
-  plt.show()
+    plt.show()
 
 if __name__ == "__main__":
   main()

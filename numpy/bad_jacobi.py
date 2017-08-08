@@ -68,8 +68,7 @@ def main():
 
   if args.display:
     plt.matshow( read )
-
-  plt.show()
+    plt.show()
 
 if __name__ == "__main__":
   main()
