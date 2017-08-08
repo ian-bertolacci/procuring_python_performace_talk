@@ -5,7 +5,7 @@ from builtins import range
 import matplotlib.pyplot as plt
 import numpy as np
 import random, argparse, copy, time
-from numba import jit
+from numba import *
 
 # Timer class
 class Timer:
@@ -22,19 +22,20 @@ class Timer:
   def elapsed( self ):
     return self.end - self.begin
 
-# Some globals
-one_fifth = 1.0 / 5.0
-
-@jit
+@guvectorize([float64[:,:],float64[:,:],int64])
 def jacobi_iteration( read, write, N ):
   #Iterate over inner (1..N)x(1..N) portion of grid
-  for i in range( 1, N+1 ):
-    for j in range( 1, N+1):
+  for i in range( 1, N[0]+1 ):
+    for j in range( 1, N[0]+1):
       # Jacobi stencil
       write[i][j] = (                read[i-1][j  ] + \
                     read[i  ][j-1] + read[i  ][j  ] + read[i  ][j+1] + \
                                      read[i+1][j  ] ) \
-                    * (one_fifth)
+                    * (0.2)
+
+@vectorize([float64(float64,float64,float64,float64,float64),float32(float32,float32,float32,float32,float32)])
+def jacobi_func( a,b,c,d,e ):
+  return (a+b+c+d+e)*0.2
 
 def main():
   argparser = argparse.ArgumentParser()
@@ -44,13 +45,13 @@ def main():
   args = argparser.parse_args()
 
   # Starting grid
-  read = [ [ 0.0 for _ in range(args.grid_size+2)] for _ in range(args.grid_size+2)]
+  read = np.zeros( (args.grid_size+2, args.grid_size+2 ) )
 
-  # Make it 'hot; on the [0][_] side and cold on the [_][0] side and 'warm' on the [i][N-i] line
+  # Make it 'hot; on the [0,_] side and cold on the [_,0] side and 'warm' on the [i,N-i] line
   for i in range(args.grid_size+2):
-    read[0][i] = 100.0;
-    read[i][0] = -100.0;
-    read[i][args.grid_size+1-i] = 50.0
+    read[0,i] = 100.0;
+    read[i,0] = -100.0;
+    read[i,args.grid_size+1-i] = 50.0
 
   # Write grid
   write = copy.deepcopy( read )
@@ -63,7 +64,10 @@ def main():
   timer.start()
   # Outer time-stepping loop
   for t in range( args.time_steps ):
-    jacobi_iteration( read, write, args.grid_size )
+
+    for i in range( 1, args.grid_size+1 ):
+      for j in range( 1, args.grid_size+1 ):
+        write[i,j] = jacobi_func( read[i-1,j  ], read[i,j-1], read[i,j], read[i,j+1], read[i+1,j] )
 
     # flip the read and write array
     write, read = read, write

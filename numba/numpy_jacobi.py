@@ -21,14 +21,11 @@ class Timer:
   def elapsed( self ):
     return self.end - self.begin
 
-# Some globals
-one_fifth = 1.0 / 5.0
-
-@jit("void(float64[:,:],float64[:,:],int64)")
+@jit(void(float64[:,:],float64[:,:],int64))
 def jacobi( read, write, N ):
   write[1:N+1,1:N+1] = ( read[1:N+1,0:N  ] + \
        read[0:N,1:N+1] + read[1:N+1,1:N+1] + read[2:N+2,1:N+1] + \
-                         read[1:N+1,2:N+2] ) * one_fifth
+                         read[1:N+1,2:N+2] ) * 0.2
 
 def main():
   argparser = argparse.ArgumentParser()
@@ -69,8 +66,7 @@ def main():
 
   if args.display:
     plt.matshow( read )
-
-  plt.show()
+    plt.show()
 
 if __name__ == "__main__":
   main()

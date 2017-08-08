@@ -5,7 +5,7 @@ from builtins import range
 import matplotlib.pyplot as plt
 import numpy as np
 import random, argparse, copy, time
-from numba import jit
+from numba import *
 
 # Timer class
 class Timer:
@@ -22,9 +22,6 @@ class Timer:
   def elapsed( self ):
     return self.end - self.begin
 
-# Some globals
-one_fifth = 1.0 / 5.0
-
 @jit
 def jacobi_iteration( read, write, N ):
   #Iterate over inner (1..N)x(1..N) portion of grid
@@ -34,7 +31,7 @@ def jacobi_iteration( read, write, N ):
       write[i][j] = (                read[i-1][j  ] + \
                     read[i  ][j-1] + read[i  ][j  ] + read[i  ][j+1] + \
                                      read[i+1][j  ] ) \
-                    * (one_fifth)
+                    * (0.2)
 
 def main():
   argparser = argparse.ArgumentParser()

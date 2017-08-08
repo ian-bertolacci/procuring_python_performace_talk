@@ -60,12 +60,12 @@ def main():
   timer.start()
 
   for i in range(args.N):
-    t = threading.Thread( target=thread_wrapper, args=(fibonacci_iterative, i,queue) )
-    threads.append( t )
-    t.start()
+    thread = threading.Thread( target=thread_wrapper, args=(fibonacci_iterative, i,queue) )
+    threads.append( thread )
+    thread.start()
 
-  for t in threads:
-    t.join()
+  for thread in threads:
+    thread.join()
 
   timer.stop()
 
@@ -87,12 +87,12 @@ def main():
   timer.start()
 
   for i in range(args.N):
-    t = threading.Thread( target=thread_wrapper, args=(fibonacci_recursive, i, queue) )
-    threads.append( t )
-    t.start()
+    thread = threading.Thread( target=thread_wrapper, args=(fibonacci_recursive, i, queue) )
+    threads.append( thread )
+    thread.start()
 
-  for t in threads:
-    t.join()
+  for thread in threads:
+    thread.join()
 
   timer.stop()
 
